@@ -109,7 +109,11 @@ namespace EFChangeNotify {
     }
 
     private DbQuery<TEntity> GetCurrent() {
-      var query = _context.Set<TEntity>().Where(_query) as DbQuery<TEntity>;
+      DbQuery<TEntity> query;
+      if (_query != null)
+        query = _context.Set<TEntity>().Where(_query) as DbQuery<TEntity>;
+      else
+        query = _context.Set<TEntity>();
 
       return query;
     }

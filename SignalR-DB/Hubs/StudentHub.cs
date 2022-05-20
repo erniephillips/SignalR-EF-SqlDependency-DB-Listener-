@@ -15,11 +15,9 @@ namespace SignalR_DB.Hubs {
   public class StudentHub : Hub {
     [HubMethodName("getStudentRecords")]
     public void GetStudentRecords() {
-      //IHubContext context = GlobalHost.ConnectionManager.GetHubContext<StudentHub>();
-      //context.Clients.All.showTheStudentList(StudentRepository.GetStudentRecords().ToList());
-
-      //initial pull of any info
-      using (var cache = new EntityCache<Student, StudentDbEntities>(p => p.StudentName == "Ernie")) {
+      //run an initial pull of the notifications, then loop through and pull from the cached results every second until a SQL table change is detected at which point the table is queried again
+      //using (var cache = new EntityCache<Student, StudentDbEntities>(p => p.StudentName == "Ernie")) {
+      using (var cache = new EntityCache<Student, StudentDbEntities>(x => x.StudentID > 0)) {
         while (true) {
           IHubContext context = GlobalHost.ConnectionManager.GetHubContext<StudentHub>();
           context.Clients.All.showTheStudentList(cache.Results.ToList());
@@ -27,7 +25,7 @@ namespace SignalR_DB.Hubs {
         }
       }
 
-      //set up a listener for the database which will update the broadcast
+      //this only runs once and does not pull from cached memory like the above memory
       //using (var notifer = new EntityChangeNotifier<Student, StudentDbEntities>(p => p.StudentName == "Ernie")) {
       //  notifer.Error += (sender, e) => {
       //    Console.WriteLine("[{0}, {1}, {2}]:\n{3}", e.Reason.Info, e.Reason.Source, e.Reason.Type, e.Sql);
@@ -37,22 +35,7 @@ namespace SignalR_DB.Hubs {
       //    IHubContext _context = GlobalHost.ConnectionManager.GetHubContext<StudentHub>();
       //    _context.Clients.All.showTheStudentList(e.Results.ToList());
       //  };
-
-      //  IHubContext context = GlobalHost.ConnectionManager.GetHubContext<StudentHub>();
-      //  context.Clients.All.showTheStudentList(notifer.Results.ToList());
       //}
-
-
-      //using (var otherNotifier = new EntityChangeNotifier<Student, StudentDbEntities>(p => p.StudentName == "Ernie")) {
-      //  otherNotifier.Changed += (sender, e) => {
-      //    Console.WriteLine(e.Results.Count());
-      //  };
-
-      //  Console.WriteLine("Press any key to stop listening for changes...");
-      //  Console.ReadKey(true);
-      //}
-
     }
-
   }
 }

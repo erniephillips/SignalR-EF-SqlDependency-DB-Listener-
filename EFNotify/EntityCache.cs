@@ -21,7 +21,11 @@ namespace EFChangeNotify {
     }
 
     private IEnumerable<TEntity> GetCurrent() {
-      var query = _context.Set<TEntity>().Where(_query);
+      IQueryable<TEntity> query;
+      if (_query != null)
+        query = _context.Set<TEntity>().Where(_query);
+      else
+        query = _context.Set<TEntity>();
 
       return query;
     }

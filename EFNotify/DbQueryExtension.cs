@@ -7,13 +7,19 @@ using System.Reflection;
 namespace EFChangeNotify {
   public static class DbQueryExtension {
     public static ObjectQuery<T> ToObjectQuery<T>(this DbQuery<T> query) {
+      //var internalQuery = query.GetType()
+      //    .GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+      //    .Where(field => field.Name == "_internalQuery")
+      //    .Select(field => field.GetValue(query))
+      //    .First();
+
       var internalQuery = query.GetType()
           .GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
           .Where(field => field.Name == "_internalQuery")
           .Select(field => field.GetValue(query))
           .First();
 
-      
+
       var internalQueryType = internalQuery.GetType();
       var fields = internalQueryType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
       var fieldsWhere = fields.Where(field => field.Name == "_objectQuery");
