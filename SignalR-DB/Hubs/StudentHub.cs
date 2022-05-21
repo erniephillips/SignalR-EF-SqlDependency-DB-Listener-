@@ -15,14 +15,14 @@ namespace SignalR_DB.Hubs {
   public class StudentHub : Hub {
     [HubMethodName("getStudentRecords")]
     public void GetStudentRecords() {
-      //run an initial pull of the notifications, then loop through and pull from the cached results every second until a SQL table change is detected at which point the table is queried again
+      //run an initial pull of the notifications, the signalr broadcase is then handled in the onchange listener in the entitychangenotifier for all db updates
       //using (var cache = new EntityCache<Student, StudentDbEntities>(p => p.StudentName == "Ernie")) {
       using (var cache = new EntityCache<Student, StudentDbEntities>(x => x.StudentID > 0)) {
-        while (true) {
-          IHubContext context = GlobalHost.ConnectionManager.GetHubContext<StudentHub>();
-          context.Clients.All.showTheStudentList(cache.Results.ToList());
-          Thread.Sleep(1000);
-        }
+        //while (true) {
+        IHubContext context = GlobalHost.ConnectionManager.GetHubContext<StudentHub>();
+        context.Clients.All.showTheStudentList(cache.Results.ToList());
+        //  Thread.Sleep(1000);
+        //}
       }
 
       //this only runs once and does not pull from cached memory like the above memory
